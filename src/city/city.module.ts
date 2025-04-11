@@ -13,5 +13,6 @@ import { CacheService } from '../cache/cache.service'; // Ajuste o caminho se ne
   ],
   controllers: [CityController],
   providers: [CityService, CacheService], // Adicionado CacheService
+  exports: [CityService]
 })
 export class CityModule {}

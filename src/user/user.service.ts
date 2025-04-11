@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { UserEntity } from './entities/user.entity';
 import { hash } from 'bcrypt';
@@ -21,7 +21,51 @@ export class UserService {
       senha: senhaHased,
     });
   }
+
+  async getUserByIdUsingRelations(userId: number): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: {
+        addresses: {
+          city: {
+            state: true,
+          },
+        },
+      },
+    });
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${userId} não encontrado.`);
+    }
+
+    return user;
+  }
+
   async getAlUser(): Promise<UserEntity[]> {
     return this.userRepository.find();
+  }
+  async findUserById(userId: number): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user) {
+      throw new NotFoundException(`User Id Not Found`);
+    }
+    return user;
+  }
+
+  async findUserByEmail(email: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+    });
+    if (!user) {
+      throw new NotFoundException(`User Email Not Found`);
+    }
+    return user;
   }
 }
