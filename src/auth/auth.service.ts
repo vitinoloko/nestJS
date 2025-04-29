@@ -7,24 +7,29 @@ import { JwtService } from '@nestjs/jwt';
 import { ReturnLogi } from './dtos/returnLogin.dto';
 import { ReturnUserDtos } from 'src/user/dtos/returnUser.dto';
 import { LoginPayload } from './dtos/loginPayload.dto';
+import { validatePassword } from 'src/utils/password';
 
 @Injectable()
 export class AuthServices {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService) {}
+    private readonly jwtService: JwtService,
+  ) {}
 
   async login(LoginDto: LoginDto): Promise<ReturnLogi> {
     const user: UserEntity | undefined = await this.userService
       .findUserByEmail(LoginDto.email)
       .catch(() => undefined);
-    const isMatch = await compare(LoginDto.password, user?.senha || '');
+    const isMatch = await validatePassword(
+      LoginDto.password,
+      user?.senha || '',
+    );
 
     if (!user || !isMatch) {
       throw new NotFoundException('Email or password invalid');
     }
     return {
-      accessToken: this.jwtService.sign({...new LoginPayload(user)}),
+      accessToken: this.jwtService.sign({ ...new LoginPayload(user) }),
       user: new ReturnUserDtos(user),
     };
   }
