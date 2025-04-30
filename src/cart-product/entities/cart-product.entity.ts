@@ -9,19 +9,19 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity({ name: 'product' })
+@Entity({ name: 'cart_product' })
 export class CartProductEntity {
   @PrimaryGeneratedColumn('rowid')
   id: number;
   @Column({ name: 'cart_id', nullable: false })
-  userId: number;
+  cartId: number;
   @Column({ name: 'product_id', nullable: false })
   productId: number;
   @Column({ name: 'amount', nullable: false })
   amount: number;
-  @CreateDateColumn({ name: 'create_at' })
+  @CreateDateColumn({ name: 'created_at' })
   createAt: Date;
-  @CreateDateColumn({ name: 'update_at' })
+  @CreateDateColumn({ name: 'updated_at' })
   updateAt: Date;
 
   @ManyToOne(
